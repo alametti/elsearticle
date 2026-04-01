@@ -71,3 +71,6 @@
 )
 
 #let isappendix = state("isappendix", false)
+
+#let review-us-letter-margins = (left: 39.7mm, right: 39.7mm, top: 39.7mm, bottom: 39.7mm)
+#let preprint-us-letter-margins = (left: 39.7mm, right: 39.7mm, top: 43.7mm, bottom: 61.5mm)
