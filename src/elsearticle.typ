@@ -39,10 +39,8 @@
   line-numbering: false,
 
   // Custom paper size, if not set uses a4 in els-globals.typ
-  paper: "a4",
-
-  // Custom margin size if paper and format combination is not supported
-  margin: (),
+  // Must be a dictionary with width, height, and paper (str)
+  custom-paper: (),
 
   // The document's content.
   body,
@@ -57,31 +55,6 @@
   else if format.contains("3p") {three-p}
   else if format.contains("5p") {five-p}
   else {review}
-
-  if paper != none {
-    els-format.paper = paper
-    if paper == "us-letter" {
-      els-format.margin = if format.contains("review") {
-        review-us-letter-margins
-      } else if format.contains("preprint") {
-        preprint-us-letter-margins
-      } else {
-        assert.ne(
-          margin, (),
-          message:
-            "unsupported paper and format combination, a margin dictionary must be provided",
-          )
-        margin
-      }
-    } else {
-      assert.ne(
-        margin, (),
-        message:
-          "unsupported paper and format combination, a margin dictionary must be provided",
-        )
-      els-format.margin = margin
-    }
-  }
 
   let els-columns = if format.contains("1p") {1}
   else if format.contains("5p") {2}
@@ -142,14 +115,34 @@
   height: 100%,
   )
 
+  let paper = els-format.paper
+  let margins = els-format.margins
+
+  if custom-paper != () {
+    let a4 = (
+      height: 297mm,
+      width: 210mm,
+    )
+    let right = (custom-paper.width - a4.width)/2 + els-format.margins.right
+    let left = (custom-paper.width - a4.width)/2 + els-format.margins.left
+    margins = (
+      top: els-format.margins.top,
+      right: right,
+      bottom: els-format.margins.bottom,
+      left: left,
+    )
+    paper = custom-paper.name
+  }
+
   set page(
-    paper: els-format.paper,
+    paper: paper,
     numbering: "1",
-    margin: els-format.margins,
+    margin: margins,
     footer: footer,
     footer-descent: els-format.footer-descent,
     // columns: els-columns
   )
+  
 
   // Links
   show link: set text(fill: rgb(0, 0, 255))
